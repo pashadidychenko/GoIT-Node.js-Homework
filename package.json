@@ -1,0 +1,28 @@
+{
+  "name": "goit_node_js_homework",
+  "version": "1.0.0",
+  "description": "Home work node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Pasha.Didychenko",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pashadidychenko/GoIT-Node.js-Homework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pashadidychenko/GoIT-Node.js-Homework/issues"
+  },
+  "homepage": "https://github.com/pashadidychenko/GoIT-Node.js-Homework#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "shortid": "^2.2.15",
+    "yargs": "^16.0.3"
+  }
+}
