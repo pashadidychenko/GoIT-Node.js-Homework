@@ -7,6 +7,7 @@ const {
 
 const argv = require("yargs").argv;
 
+//  build interactive command line function, by parsing arguments and generating an elegant user interface.
 function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":

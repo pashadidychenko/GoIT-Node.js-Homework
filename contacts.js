@@ -3,6 +3,7 @@ const path = require("path");
 const contactsPath = path.join(__dirname, "./db/contacts.json");
 const shortid = require("shortid");
 
+// Get contact list
 function listContacts() {
   fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
@@ -10,6 +11,7 @@ function listContacts() {
   });
 }
 
+// Find contact by ID
 function getContactById(contactId) {
   fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
@@ -20,6 +22,7 @@ function getContactById(contactId) {
   });
 }
 
+// Remove contact by id
 function removeContact(contactId) {
   fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
@@ -32,6 +35,7 @@ function removeContact(contactId) {
   });
 }
 
+// Add contact. ID generate atomatycly using "short non-sequential url-friendly unique id generator".
 function addContact(name, email, phone) {
   const oldContactList = require(contactsPath);
   const newContactList = [
