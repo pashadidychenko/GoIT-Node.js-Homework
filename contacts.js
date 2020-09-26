@@ -4,14 +4,14 @@ const contactsPath = path.join(__dirname, "./db/contacts.json");
 const shortid = require("shortid");
 
 function listContacts() {
-  fs.readFile("./db/contacts.json", "utf8", (err, data) => {
+  fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
     console.log(data);
   });
 }
 
 function getContactById(contactId) {
-  fs.readFile("./db/contacts.json", "utf8", (err, data) => {
+  fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
     const contact = JSON.parse(data).find(
       (contact) => contact.id === contactId
@@ -21,24 +21,21 @@ function getContactById(contactId) {
 }
 
 function removeContact(contactId) {
-  fs.readFile("./db/contacts.json", "utf8", (err, data) => {
+  fs.readFile(contactsPath, "utf8", (err, data) => {
     if (err) throw err;
     const filteredContacts = JSON.parse(data).filter(
       (contact) => contact.id !== contactId
     );
-    fs.writeFile(
-      "./db/contacts.json",
-      JSON.stringify(filteredContacts),
-      (err) => {
-        if (err) throw err;
-      }
-    );
+    fs.writeFile(contactsPath, JSON.stringify(filteredContacts), (err) => {
+      if (err) throw err;
+    });
   });
 }
 
 function addContact(name, email, phone) {
+  const oldContactList = require(contactsPath);
   const newContactList = [
-    ...contactsPath,
+    ...oldContactList,
     {
       id: shortid.generate(),
       name: name,
@@ -46,7 +43,7 @@ function addContact(name, email, phone) {
       phone: phone,
     },
   ];
-  fs.writeFile("./db/contacts.json", JSON.stringify(newContactList), (err) => {
+  fs.writeFile(contactsPath, JSON.stringify(newContactList), (err) => {
     if (err) throw err;
   });
 }
