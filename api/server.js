@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const userListRouter = require("./routers/userList.routes");
 
 require("dotenv").config();
@@ -21,6 +22,7 @@ module.exports = class UserList {
 
   initMiddlewarew() {
     this.server.use(express.json());
+    this.server.use(morgan("combined"));
     this.server.use(cors({ origin: "http://localhost:3000" }));
   }
 
