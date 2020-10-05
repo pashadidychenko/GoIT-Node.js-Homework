@@ -9,8 +9,9 @@ const {
 
 module.exports = class UserListControllers {
   // Get user list
-  static getUserList(req, res, next) {
-    return res.status(200).json(listContacts());
+  static async getUserList(req, res, next) {
+    const userList = await listContacts();
+    return res.status(200).json(userList);
   }
 
   // Get user by id
@@ -19,20 +20,21 @@ module.exports = class UserListControllers {
   }
 
   // Great new user
-  static creatUser(req, res, next) {
-    addContact(req.body.name, req.body.email, req.body.phone);
-    return res.status(201).json(listContacts()[listContacts().length - 1]);
+  static async creatUser(req, res, next) {
+    await addContact(req.body.name, req.body.email, req.body.phone);
+    const newUser = await listContacts();
+    return res.status(201).json(newUser[newUser.length - 1]);
   }
 
   // Update user
-  static updateUser(req, res, next) {
-    updateContact(req.params.id, req.body);
+  static async updateUser(req, res, next) {
+    await updateContact(req.params.id, req.body);
     return res.status(200).json(getContactById(req.params.id));
   }
 
   // deleteUser
-  static deleteUser(req, res, next) {
-    removeContact(req.params.id);
+  static async deleteUser(req, res, next) {
+    await removeContact(req.params.id);
     return res.status(200).json({ message: "contact deleted" });
   }
 
@@ -65,8 +67,9 @@ module.exports = class UserListControllers {
   }
 
   // Check User in list
-  static checkUserInList(req, res, next) {
-    const targetUserIndex = listContacts().findIndex(
+  static async checkUserInList(req, res, next) {
+    const userList = await listContacts();
+    const targetUserIndex = userList.findIndex(
       (user) => user.id == req.params.id
     );
     if (targetUserIndex === -1) {
