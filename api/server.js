@@ -41,7 +41,7 @@ module.exports = class UserList {
       })
       .catch((error) => {
         console.log(error);
-        return process.exit(0);
+        process.exit(1);
       });
     console.log("Database connection successful");
   }
