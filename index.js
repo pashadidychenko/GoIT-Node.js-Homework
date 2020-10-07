@@ -1,1 +1,3 @@
-console.log("Home work Node");
+const UserList = require("./api/server");
+
+new UserList().start();
