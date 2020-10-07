@@ -33,11 +33,16 @@ module.exports = class UserList {
   }
 
   async initDataBase() {
-    await mongoose.connect(process.env.URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    });
+    await mongoose
+      .connect(process.env.URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+      })
+      .catch((error) => {
+        console.log(error);
+        return process.exit(0);
+      });
     console.log("Database connection successful");
   }
 
