@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 const userListRouter = require("./routers/userList.routes");
@@ -9,10 +10,11 @@ module.exports = class UserList {
   constructor() {
     this.server = null;
   }
-  start() {
+  async start() {
     this.initServer();
     this.initMiddlewarew();
     this.initRoutes();
+    await this.initDataBase();
     this.startListening();
   }
 
@@ -23,11 +25,25 @@ module.exports = class UserList {
   initMiddlewarew() {
     this.server.use(express.json());
     this.server.use(morgan("combined"));
-    this.server.use(cors({ origin: "http://localhost:3000" }));
+    this.server.use(cors({ origin: `http://localhost:${process.env.PORT}` }));
   }
 
   initRoutes() {
     this.server.use("/api/contacts", userListRouter);
+  }
+
+  async initDataBase() {
+    await mongoose
+      .connect(process.env.URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+      })
+      .catch((error) => {
+        console.log(error);
+        process.exit(1);
+      });
+    console.log("Database connection successful");
   }
 
   startListening() {
