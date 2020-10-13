@@ -3,16 +3,18 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    name: { type: String, required: true },
     email: { type: String, required: true },
-    phone: { type: String, required: true },
-    subscription: { type: String, required: true },
+    subscription: {
+      type: String,
+      enum: ["free", "pro", "premium"],
+      default: "free",
+    },
     password: { type: String, required: true },
-    token: { type: String, required: false, default: "" },
+    token: { type: String, required: false },
   },
   { versionKey: false }
 );
 
-const userModel = mongoose.model("contacts", userSchema);
+const userModel = mongoose.model("user", userSchema);
 
 module.exports = userModel;

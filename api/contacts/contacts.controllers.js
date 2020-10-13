@@ -1,67 +1,67 @@
 const Joi = require("joi");
-const userModel = require("./userSchema");
+const contactModel = require("./contacts.schema");
 const {
   Types: { ObjectId },
 } = require("mongoose");
 
-module.exports = class UserListControllers {
-  // Get user list
-  static async getUserList(req, res, next) {
+module.exports = class contactsControllers {
+  // Get contact list
+  static async getContactsList(req, res, next) {
     try {
-      const users = await userModel.find();
-      return res.status(200).json(users);
+      const contacts = await contactModel.find();
+      return res.status(200).json(contacts);
     } catch (err) {
       next(err);
     }
   }
 
-  // Get user by id
-  static async getUserById(req, res, next) {
+  // Get contact by id
+  static async getContactById(req, res, next) {
     try {
-      const user = await userModel.findById(req.params.id);
-      if (!user) {
+      const contact = await contactModel.findById(req.params.id);
+      if (!contact) {
         return res.status(404).json({ message: "Contact not found" });
       }
-      return res.status(200).json(user);
+      return res.status(200).json(contact);
     } catch (err) {
       next(err);
     }
   }
 
-  // Great new user
-  static async creatUser(req, res, next) {
+  // Great new contact
+  static async creatContact(req, res, next) {
     try {
-      const user = await userModel.create(req.body);
-      return res.status(201).json(user);
+      const contact = await contactModel.create(req.body);
+      return res.status(201).json(contact);
     } catch (err) {
       next(err);
     }
   }
 
-  // Update user
-  static async updateUser(req, res, next) {
+  // Update contact by ID
+  static async updateContact(req, res, next) {
     try {
-      const user = await userModel.findByIdAndUpdate(
+      const contact = await contactModel.findByIdAndUpdate(
         req.params.id,
         {
           $set: req.body,
         },
         { new: true }
       );
-      if (!user) {
+      if (!contact) {
         return res.status(404).json({ message: "Contact not found" });
       }
-      return res.status(200).json(user);
+      return res.status(200).json(contact);
     } catch (err) {
       next(err);
     }
   }
 
-  // Delete User
-  static async deleteUser(req, res, next) {
+  // Delete contact by ID
+  static async deleteContact(req, res, next) {
     try {
-      const user = await userModel.findByIdAndDelete(req.params.id);
-      if (!user) {
+      const contact = await contactModel.findByIdAndDelete(req.params.id);
+      if (!contact) {
         return res.status(404).json({ message: "Contact alredy deleted" });
       }
       return res.status(200).json({ message: "Contact deleted" });
@@ -70,9 +70,9 @@ module.exports = class UserListControllers {
     }
   }
 
-  // Validate new user
-  static validateCreateUser(req, res, next) {
-    const createUserRules = Joi.object({
+  // Validate new contact
+  static validateCreateContatc(req, res, next) {
+    const createContactRules = Joi.object({
       name: Joi.string().required(),
       email: Joi.string().required(),
       phone: Joi.string().required(),
@@ -80,16 +80,16 @@ module.exports = class UserListControllers {
       password: Joi.string().required(),
       token: Joi.string(),
     });
-    const result = createUserRules.validate(req.body);
+    const result = createContactRules.validate(req.body);
     if (result.error) {
       return res.status(400).send(result.error.details);
     }
     next();
   }
 
-  // Validate update user
-  static validateUpdateUser(req, res, next) {
-    const updateUserRules = Joi.object({
+  // Validate update contact
+  static validateUpdatecontact(req, res, next) {
+    const updateContactRules = Joi.object({
       name: Joi.string(),
       email: Joi.string(),
       phone: Joi.string(),
@@ -97,15 +97,15 @@ module.exports = class UserListControllers {
       password: Joi.string(),
       token: Joi.string(),
     });
-    const result = updateUserRules.validate(req.body);
+    const result = updateContactRules.validate(req.body);
     if (result.error) {
       return res.status(400).send(result.error.details);
     }
     next();
   }
 
-  // Check User in list
-  static async checkUserInList(req, res, next) {
+  // Check contact in list
+  static async checkContactInList(req, res, next) {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Not found" });
     }
