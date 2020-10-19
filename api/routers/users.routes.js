@@ -30,4 +30,11 @@ usersRouter.get(
   usersControllers.getCurrentUser
 );
 
+// Update information in user
+usersRouter.patch(
+  "/users/:id",
+  usersControllers.authorize,
+  usersControllers.updateCurrentUser
+);
+
 module.exports = usersRouter;

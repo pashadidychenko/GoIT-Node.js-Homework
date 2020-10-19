@@ -2,8 +2,12 @@ const { Router } = require("express");
 const contactsRouter = Router();
 const contactsControllers = require("../contacts/contacts.controllers");
 
-// Get contact list
-contactsRouter.get("/", contactsControllers.getContactsList);
+// Get contact list or with options
+contactsRouter.get(
+  "/",
+  contactsControllers.getOptionalContactsList,
+  contactsControllers.getContactsList
+);
 
 // Great new contact and add to list
 contactsRouter.post(

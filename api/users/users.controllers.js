@@ -84,6 +84,28 @@ module.exports = class usersControllers {
     }
   }
 
+  // Update current user
+  static async updateCurrentUser(req, res, next) {
+    try {
+      const user = await userModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        { new: true }
+      );
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      return res.status(200).json({
+        email: user.email,
+        subscription: user.subscription,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // Validate user
   static validateUser(req, res, next) {
     const createContactRules = Joi.object({

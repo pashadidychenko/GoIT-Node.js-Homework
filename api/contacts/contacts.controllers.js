@@ -4,12 +4,41 @@ const {
   Types: { ObjectId },
 } = require("mongoose");
 
+const options = {
+  page: 1,
+  limit: 4,
+  collation: {
+    subscription: "free",
+  },
+};
+
 module.exports = class contactsControllers {
   // Get contact list
   static async getContactsList(req, res, next) {
     try {
       const contacts = await contactModel.find();
       return res.status(200).json(contacts);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Get contact list with options
+  static async getOptionalContactsList(req, res, next) {
+    try {
+      const { limit, page, sub } = req.query;
+      if (limit && page) {
+        const options = { limit, page };
+        const contacts = await contactModel.paginate({}, options);
+        return res.status(200).json(contacts.docs);
+      }
+      if (sub) {
+        const query = { subscription: sub };
+        const options = { limit: 20, page: 1 };
+        const contacts = await contactModel.paginate(query, options);
+        return res.status(200).json(contacts.docs);
+      }
+      next();
     } catch (err) {
       next(err);
     }
