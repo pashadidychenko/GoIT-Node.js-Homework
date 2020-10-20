@@ -10,8 +10,8 @@ const userSchema = new Schema(
       default: "free",
     },
     password: { type: String, required: true },
-    avatarURL: { type: String, required: false },
-    token: { type: String, required: false },
+    avatarURL: { type: String },
+    token: { type: String },
   },
   { versionKey: false }
 );
