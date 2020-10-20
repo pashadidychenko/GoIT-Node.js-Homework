@@ -1,3 +1,3 @@
-const UserList = require("./api/server");
+const StartServer = require("./api/server");
 
-new UserList().start();
+new StartServer().start();
