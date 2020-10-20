@@ -1,3 +1,4 @@
 PORT=
 PASSWORD=
-URI=mongodb+srv://nodeAdmin:Mhm9HD9OozVLrkG6@cluster0.2q0jf.mongodb.net/db-contacts?retryWrites=true&w=majority;
+URI=
+JWT_SECURE_KEY=
