@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const saltRounds = 1;
+const saltRounds = 8;
 const userModel = require("./users.schema");
 
 async function hashPassword(password) {

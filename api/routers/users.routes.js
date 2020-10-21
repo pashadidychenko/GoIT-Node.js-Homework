@@ -34,6 +34,7 @@ usersRouter.get(
 usersRouter.patch(
   "/users/:id",
   usersControllers.authorize,
+  usersControllers.subscriptionType,
   usersControllers.updateCurrentUser
 );
 
