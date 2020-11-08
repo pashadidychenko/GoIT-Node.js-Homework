@@ -1,7 +1,14 @@
 const Joi = require("joi");
 const userModel = require("./users.schema");
-const { hashPassword, findUser, updateToken } = require("./user.helpers");
-var jwt = require("jsonwebtoken");
+const {
+  hashPassword,
+  findUser,
+  updateToken,
+  greatAvatar,
+  imageMinify,
+  removeAvatar,
+} = require("./user.helpers");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 require("dotenv").config();
@@ -13,13 +20,18 @@ module.exports = class usersControllers {
       const { email, password } = req.body;
       const userExsist = await findUser(email);
       if (!userExsist) {
+        await greatAvatar(email);
+        await imageMinify();
+        await removeAvatar(`${email}.png`);
         const newUser = await userModel.create({
           email,
+          avatarURL: `http://localhost:3000/images/${email}.png`,
           password: await hashPassword(password),
         });
         return res.status(201).json({
           user: {
             email: newUser.email,
+            avatarURL: newUser.avatarURL,
             subscription: newUser.subscription,
           },
         });
@@ -106,8 +118,22 @@ module.exports = class usersControllers {
     }
   }
 
+  // Add Avatar
+  static async addAvatar(req, res, next) {
+    try {
+      await imageMinify();
+      await removeAvatar(req.file.filename);
+      return res.status(200).json({
+        avatarURL: `http://localhost:3000/images/${req.file.filename}`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // Validate user
   static validateUser(req, res, next) {
+    console.log("validate");
     const createUserRules = Joi.object({
       email: Joi.string().required(),
       password: Joi.string().required(),
