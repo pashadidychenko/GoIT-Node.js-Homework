@@ -27,18 +27,15 @@ module.exports = class contactsControllers {
   static async getOptionalContactsList(req, res, next) {
     try {
       const { limit, page, sub } = req.query;
-      if (limit && page) {
-        const options = { limit, page };
-        const contacts = await contactModel.paginate({}, options);
-        return res.status(200).json(contacts.docs);
-      }
-      if (sub) {
-        const query = { subscription: sub };
-        const options = { limit: 20, page: 1 };
-        const contacts = await contactModel.paginate(query, options);
-        return res.status(200).json(contacts.docs);
-      }
-      next();
+      const options = {
+        page: page || 1,
+        limit: limit || 20,
+      };
+      const contacts = await contactModel.paginate(
+        sub && { subscription: sub },
+        options
+      );
+      return res.status(200).json(contacts.docs);
     } catch (err) {
       next(err);
     }

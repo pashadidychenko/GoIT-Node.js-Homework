@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const usersRouter = Router();
 const usersControllers = require("../users/users.controllers");
+const { upload } = require("../users/user.helpers");
 
 // Registration request
 usersRouter.post(
@@ -30,10 +31,19 @@ usersRouter.get(
   usersControllers.getCurrentUser
 );
 
+// Add avatar
+usersRouter.patch(
+  "/users/avatars",
+  usersControllers.authorize,
+  upload.single("avatars"),
+  usersControllers.addAvatar
+);
+
 // Update information in user
 usersRouter.patch(
   "/users/:id",
   usersControllers.authorize,
+  usersControllers.subscriptionType,
   usersControllers.updateCurrentUser
 );
 

@@ -1,7 +1,14 @@
 const Joi = require("joi");
 const userModel = require("./users.schema");
-const { hashPassword, findUser, updateToken } = require("./user.helpers");
-var jwt = require("jsonwebtoken");
+const {
+  hashPassword,
+  findUser,
+  updateToken,
+  greatAvatar,
+  imageMinify,
+  removeAvatar,
+} = require("./user.helpers");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 require("dotenv").config();
@@ -13,13 +20,18 @@ module.exports = class usersControllers {
       const { email, password } = req.body;
       const userExsist = await findUser(email);
       if (!userExsist) {
+        await greatAvatar(email);
+        await imageMinify();
+        await removeAvatar(`${email}.png`);
         const newUser = await userModel.create({
           email,
+          avatarURL: `http://localhost:3000/images/${email}.png`,
           password: await hashPassword(password),
         });
         return res.status(201).json({
           user: {
             email: newUser.email,
+            avatarURL: newUser.avatarURL,
             subscription: newUser.subscription,
           },
         });
@@ -40,15 +52,15 @@ module.exports = class usersControllers {
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "Email or password is wrong" });
+        return res.status(401).json({ message: "Password is wrong" });
       }
       const token = await jwt.sign(
         { id: user._id },
         process.env.JWT_SECURE_KEY,
-        { expiresIn: 172800 } // two deys
+        { expiresIn: "1d" }
       );
       updateToken(user._id, token);
-      return res.status(200).json({
+      return res.json({
         token: token,
         user: {
           email: user.email,
@@ -75,7 +87,7 @@ module.exports = class usersControllers {
   static async getCurrentUser(req, res, next) {
     try {
       const user = req.user;
-      return res.status(200).json({
+      return res.json({
         email: user.email,
         subscription: user.subscription,
       });
@@ -97,7 +109,7 @@ module.exports = class usersControllers {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      return res.status(200).json({
+      return res.json({
         email: user.email,
         subscription: user.subscription,
       });
@@ -106,13 +118,39 @@ module.exports = class usersControllers {
     }
   }
 
+  // Add Avatar
+  static async addAvatar(req, res, next) {
+    try {
+      await imageMinify();
+      await removeAvatar(req.file.filename);
+      return res.status(200).json({
+        avatarURL: `http://localhost:3000/images/${req.file.filename}`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // Validate user
   static validateUser(req, res, next) {
-    const createContactRules = Joi.object({
+    console.log("validate");
+    const createUserRules = Joi.object({
       email: Joi.string().required(),
       password: Joi.string().required(),
     });
-    const result = createContactRules.validate(req.body);
+    const result = createUserRules.validate(req.body);
+    if (result.error) {
+      return res.status(400).send(result.error.details);
+    }
+    next();
+  }
+
+  // Validate subscription type
+  static subscriptionType(req, res, next) {
+    const createSubscriptionRules = Joi.object({
+      subscription: Joi.string().valid("free", "pro", "premium"),
+    });
+    const result = createSubscriptionRules.validate(req.body);
     if (result.error) {
       return res.status(400).send(result.error.details);
     }
