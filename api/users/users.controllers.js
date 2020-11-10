@@ -10,6 +10,8 @@ const {
 } = require("./user.helpers");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
+const sendMail = require("./send.email");
 
 require("dotenv").config();
 
@@ -17,9 +19,11 @@ module.exports = class usersControllers {
   // Registration user
   static async registerUser(req, res, next) {
     try {
+      const verificationToken = uuidv4();
       const { email, password } = req.body;
       const userExsist = await findUser(email);
       if (!userExsist) {
+        await sendMail(email, verificationToken);
         await greatAvatar(email);
         await imageMinify();
         await removeAvatar(`${email}.png`);
@@ -27,6 +31,7 @@ module.exports = class usersControllers {
           email,
           avatarURL: `http://localhost:3000/images/${email}.png`,
           password: await hashPassword(password),
+          verificationToken,
         });
         return res.status(201).json({
           user: {
@@ -133,7 +138,6 @@ module.exports = class usersControllers {
 
   // Validate user
   static validateUser(req, res, next) {
-    console.log("validate");
     const createUserRules = Joi.object({
       email: Joi.string().required(),
       password: Joi.string().required(),
@@ -175,6 +179,25 @@ module.exports = class usersControllers {
       req.user = user;
       req.token = token;
       next();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Verification Token
+  static async verificateEmailUser(req, res, next) {
+    try {
+      const verificationToken = req.params.verificationToken;
+      const user = await userModel.findOneAndUpdate(
+        { verificationToken },
+        {
+          verificationToken: null,
+        }
+      );
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      return res.json({ message: "Email Verificated" });
     } catch (err) {
       next(err);
     }
