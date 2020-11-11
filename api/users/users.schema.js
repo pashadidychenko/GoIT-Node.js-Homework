@@ -12,6 +12,7 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     avatarURL: { type: String },
     token: { type: String },
+    verificationToken: { type: String },
   },
   { versionKey: false }
 );

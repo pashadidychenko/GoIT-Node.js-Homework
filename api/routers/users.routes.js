@@ -47,4 +47,10 @@ usersRouter.patch(
   usersControllers.updateCurrentUser
 );
 
+// Verification request
+usersRouter.get(
+  "/auth/verify/:verificationToken",
+  usersControllers.verificateEmailUser
+);
+
 module.exports = usersRouter;
